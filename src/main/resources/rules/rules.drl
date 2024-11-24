@@ -1,0 +1,145 @@
+import java.util.List;
+import org.lesson.entity.Computer;
+import java.util.Arrays;
+import java.time.LocalDate;
+
+//Правила
+//На данный момент наборы тестов и даты их выполнения для конкретных типов компьютеров выбираются в соответствии со следующими бизнес-правилами.
+//Над компьютерами типа 1 должны быть выполнены тесты 1, 2 и 3.
+//Над компьютерами типа 2, выполняющими функцию серверов DNS, должны быть выполнены тесты 4 и 5.
+//Над компьютерами типа 2, выполняющими функцию серверов DDNS, должны быть выполнены тесты 2 и 3.
+//Над компьютерами типа 2, выполняющими функцию шлюза, должны быть выполнены тесты 3 и 4.
+//Над компьютерами типа 2, выполняющиими функцию маршрутизатора, должны быть выполнены тесты 1 и 3.
+// Если среди тестов, выбранных для данного компьютера, есть тест 1, то тестирование должно производиться не позднее
+// чем через три дня после даты производства. Данное правило является приоритетным по отношению ко всем последующим
+// правилам выбора даты тестирования.
+// Если среди тестов, выбранных для данного компьютера, есть тест 2, то тестирование должно производиться не позднее
+// чем через семь дней после даты производства. Данное правило является приоритетным по отношению ко всем последующим
+// правилам выбора даты тестирования.
+// Если среди тестов, выбранных для данного компьютера, есть тест 3, то тестирование должно производиться не позднее
+// чем через 10 дней после даты производства. Данное правило является приоритетным по отношению ко всем последующим
+// правилам выбора даты тестирования.
+// Если среди тестов, выбранных для данного компьютера, есть тест 4, то тестирование должно производиться не позднее
+// чем через 12 дней после даты производства. Данное правило является приоритетным по отношению ко всем последующим
+// правилам выбора даты тестирования.
+// Если среди тестов, выбранных для данного компьютера, есть тест 5, то тестирование должно производиться не позднее
+// чем через 14 дней после даты производства.
+
+rule "Tests for type 1"
+salience 100
+when
+    $computer: Computer(type == "type 1")
+then
+    System.out.println("------------------------------------------------------");
+    System.out.println("Rule 'Tests for type 1' triggered for: " + $computer);
+    $computer.setTests(Arrays.asList("test 1", "test 2", "test 3"));
+    update($computer);
+    System.out.println("Updated: " + $computer);
+end
+
+rule "Tests for type 2 DNS Server"
+salience 100
+when
+    $computer: Computer(type == "type 2", func == "DNS Server")
+then
+    System.out.println("------------------------------------------------------");
+    System.out.println("Rule 'Tests for type 2 DNS Server' triggered for: " + $computer);
+    $computer.setTests(Arrays.asList("test 4", "test 5"));
+    update($computer);
+    System.out.println("Updated: " + $computer);
+end
+
+rule "Tests for type 2 DDNS Server"
+salience 100
+when
+    $computer: Computer(type == "type 2", func == "DDNS Server")
+then
+    System.out.println("------------------------------------------------------");
+    System.out.println("Rule 'Tests for type 2 DDNS Server' triggered for: " + $computer);
+    $computer.setTests(Arrays.asList("test 2", "test 3"));
+    update($computer);
+    System.out.println("Updated: " + $computer);
+end
+
+rule "Tests for type 2 Gateway"
+salience 100
+when
+    $computer: Computer(type == "type 2", func == "Gateway")
+then
+    System.out.println("------------------------------------------------------");
+    System.out.println("Rule 'Tests for type 2 Gateway' triggered for: " + $computer);
+    $computer.setTests(Arrays.asList("test 3", "test 4"));
+    update($computer);
+    System.out.println("Updated: " + $computer);
+end
+
+rule "Tests for type 2 Router"
+salience 100
+when
+    $computer: Computer(type == "type 2", func == "Router")
+then
+    System.out.println("------------------------------------------------------");
+    System.out.println("Rule 'Tests for type 2 Router' triggered for: " + $computer);
+    $computer.setTests(Arrays.asList("test 1", "test 3"));
+    update($computer);
+    System.out.println("Updated: " + $computer);
+end
+
+rule "Deadline for test 1"
+salience 50
+when
+    $computer: Computer(tests contains "test 1")
+then
+    System.out.println("------------------------------------------------------");
+    System.out.println("Rule 'Deadline for test 1' triggered for: " + $computer);
+    LocalDate newDeadline = $computer.getProductionDate().plusDays(3);
+    $computer.setTestDeadline(newDeadline);
+    System.out.println("Updated: " + $computer);
+end
+
+rule "Deadline for test 2"
+salience 40
+when
+    $computer: Computer(tests contains "test 2")
+then
+    System.out.println("------------------------------------------------------");
+    System.out.println("Rule 'Deadline for test 2' triggered for: " + $computer);
+    LocalDate newDeadline = $computer.getProductionDate().plusDays(7);
+    $computer.setTestDeadline(newDeadline);
+    System.out.println("Updated: " + $computer);
+end
+
+rule "Deadline for test 3"
+salience 30
+when
+    $computer: Computer(tests contains "test 3")
+then
+    System.out.println("------------------------------------------------------");
+    System.out.println("Rule 'Deadline for test 3' triggered for: " + $computer);
+    LocalDate newDeadline = $computer.getProductionDate().plusDays(10);
+    $computer.setTestDeadline(newDeadline);
+    System.out.println("Updated: " + $computer);
+end
+
+rule "Deadline for test 4" salience 20
+when
+    $computer: Computer(tests contains "test 4")
+then
+    System.out.println("------------------------------------------------------");
+    System.out.println("Rule 'Deadline for test 4' triggered for: " + $computer);
+    LocalDate newDeadline = $computer.getProductionDate().plusDays(12);
+    $computer.setTestDeadline(newDeadline);
+    System.out.println("Updated: " + $computer);
+end
+
+rule "Deadline for test 5"
+salience 10
+when
+    $computer: Computer(tests contains "test 5")
+then
+    System.out.println("------------------------------------------------------");
+    System.out.println("Rule 'Deadline for test 5' triggered for: " + $computer);
+    LocalDate newDeadline = $computer.getProductionDate().plusDays(14);
+    $computer.setTestDeadline(newDeadline);
+    System.out.println("Updated: " + $computer);
+end
